@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 //import axios from 'axios'
-import axios from  '../lib/axios'
+import axios from '../lib/axios'
 
 export interface Task {
   _id: string
@@ -18,6 +18,8 @@ interface CreateTaskData {
   description: string
   priority: 'low' | 'medium' | 'high'
 }
+
+const API_BASE_URL = import.meta.env.VITE_API_URL
 
 export const useTaskStore = defineStore('tasks', () => {
   const tasks = ref<Task[]>([])
@@ -59,7 +61,7 @@ export const useTaskStore = defineStore('tasks', () => {
 
   const initializeTasks = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/tasks', {
+      const response = await axios.get(`${API_BASE_URL}/tasks`, {
         headers: getAuthHeaders()
       })
       tasks.value = response.data
@@ -72,7 +74,7 @@ export const useTaskStore = defineStore('tasks', () => {
   const createTask = async (taskData: CreateTaskData) => {
     isLoading.value = true
     try {
-      const response = await axios.post('http://localhost:3001/api/tasks', taskData, {
+      const response = await axios.post(`${API_BASE_URL}/tasks`, taskData, {
         headers: getAuthHeaders()
       })
       tasks.value.unshift(response.data)
@@ -87,7 +89,7 @@ export const useTaskStore = defineStore('tasks', () => {
 
   const updateTaskStatus = async (taskId: string, status: Task['status']) => {
     try {
-      await axios.patch(`http://localhost:3001/api/tasks/${taskId}`, { status }, {
+      await axios.patch(`${API_BASE_URL}/tasks/${taskId}`, { status }, {
         headers: getAuthHeaders()
       })
       const task = tasks.value.find(t => t._id === taskId)
@@ -99,7 +101,7 @@ export const useTaskStore = defineStore('tasks', () => {
 
   const deleteTask = async (taskId: string) => {
     try {
-      await axios.delete(`http://localhost:3001/api/tasks/${taskId}`, {
+      await axios.delete(`${API_BASE_URL}/tasks/${taskId}`, {
         headers: getAuthHeaders()
       })
       tasks.value = tasks.value.filter(t => t._id !== taskId)

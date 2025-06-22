@@ -22,7 +22,7 @@ interface SignupCredentials {
   confirmPassword: string
 }
 
-const API_BASE = 'http://localhost:3001/api/auth'
+const API_BASE = import.meta.env.VITE_API_URL
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
