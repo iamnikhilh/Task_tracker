@@ -1,3 +1,4 @@
+// auth.ts
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -50,11 +51,10 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
 
     try {
-      const response = await axios.post(`${API_BASE}/login`, credentials)
-      // assuming response.data = { user: { id, name, email }, token: "..." }
+      const response = await axios.post(`${API_BASE}/auth/login`, credentials)
       user.value = response.data.user
       localStorage.setItem('user', JSON.stringify(response.data.user))
-      localStorage.setItem('token', response.data.token)  // ✅ store token
+      localStorage.setItem('token', response.data.token)
       return { success: true }
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Login failed. Please try again.'
@@ -75,10 +75,10 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     try {
-      const response = await axios.post(`${API_BASE}/signup`, credentials)
+      const response = await axios.post(`${API_BASE}/auth/signup`, credentials)
       user.value = response.data.user
       localStorage.setItem('user', JSON.stringify(response.data.user))
-      localStorage.setItem('token', response.data.token)  // ✅ store token
+      localStorage.setItem('token', response.data.token)
       return { success: true }
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Signup failed. Please try again.'
@@ -91,7 +91,7 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = () => {
     user.value = null
     localStorage.removeItem('user')
-    localStorage.removeItem('token')  // ✅ also remove token
+    localStorage.removeItem('token')
 
     const taskStore = useTaskStore()
     taskStore.clearTasks()
@@ -99,7 +99,7 @@ export const useAuthStore = defineStore('auth', () => {
     router.push('/login')
   }
 
-  const getToken = () => localStorage.getItem('token')  // ✅ optional helper
+  const getToken = () => localStorage.getItem('token')
 
   const clearError = () => {
     error.value = null
